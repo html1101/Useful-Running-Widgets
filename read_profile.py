@@ -14,8 +14,7 @@ parser.add_argument("-u", "--unit", help="Whether to use kilometers or miles. De
 parser.add_argument("-ng", "--no-graph", help="Disable graph of elevation profile or not.", action='store_true')
 parser.add_argument("-m", "--min-incline", help="Minimum incline permitted. Default value 0.", type=int, default=0)
 parser.add_argument("-n", "--num-steps", help="Maximum number of steps. If not specified, no upper bound.", type=int, default=float("inf"))
-parser.add_argument("-d", "--distance", help="Minimum distance a segment must be.", type=float, default=0)
-parser.add_argument("-p", "--percentage-combine", help="Percentage similarity in incline two steps must be for them to be combined. Default 2%.", type=float, default=2)
+parser.add_argument("-p", "--percent-combine", help="Percentage similarity in incline two steps must be for them to be combined. Default 2%%.", type=float, default=2)
 
 # parser.add_argument("-s", "--summarize", help=".", choices=["mi", "km"], default="mi")
 
@@ -157,7 +156,7 @@ def combine_steps(steps, combine_within = 2):
     return new_steps
 
 # Now go through the list of treadmill steps + combine ones that are similar
-treadmill_steps = combine_steps(treadmill_steps, args.percentage_combine)
+treadmill_steps = combine_steps(treadmill_steps, args.percent_combine)
 print_steps(treadmill_steps)
 
 if not args.no_graph:
