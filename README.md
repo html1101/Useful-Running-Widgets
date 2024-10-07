@@ -42,6 +42,7 @@ Step 9 (Hill)
 	Incline : 6.0%
 	Step Distance: 0.22mi
 	Start this step at (mi): 7.59mi
+Total Distance: 7.81mi
 ```
 Available options can be viewed using `python3 read_profile.py --help`:
 ```
@@ -55,8 +56,14 @@ options:
   -m MIN_INCLINE, --min-incline MIN_INCLINE
                         Minimum incline permitted. Default value 0.
   -n NUM_STEPS, --num-steps NUM_STEPS
-                        Maximum number of steps. If not specified, no upper bound.
-  -p PERCENTAGE_COMBINE, --percentage-combine PERCENTAGE_COMBINE
+                        Maximum number of steps. If not specified, no upper
+                        bound.
+  -p PERCENT_COMBINE, --percent-combine PERCENT_COMBINE
                         Percentage similarity in incline two steps must be for
                         them to be combined. Default 2%.
+  -s, --step-print      Whether or not to use alternative output format
+                        (designed more for quickly reading on treadmill).
 ```
+To effectively capture routes with sharper, more sudden drops and inclines, 
+I would recommend manually specifying the number of steps, and messing around with 
+what looks like it gets those shifts (you can check by looking at the graph).

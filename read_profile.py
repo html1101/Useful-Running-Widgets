@@ -15,6 +15,8 @@ parser.add_argument("-ng", "--no-graph", help="Disable graph of elevation profil
 parser.add_argument("-m", "--min-incline", help="Minimum incline permitted. Default value 0.", type=int, default=0)
 parser.add_argument("-n", "--num-steps", help="Maximum number of steps. If not specified, no upper bound.", type=int, default=float("inf"))
 parser.add_argument("-p", "--percent-combine", help="Percentage similarity in incline two steps must be for them to be combined. Default 2%%.", type=float, default=2)
+parser.add_argument("-s", "--step-print", help="Whether or not to use alternative output format (designed more for quickly reading on treadmill).", action='store_true')
+
 
 # parser.add_argument("-s", "--summarize", help=".", choices=["mi", "km"], default="mi")
 
@@ -118,8 +120,8 @@ def generate_treadmill_steps(distances, slopes, window_size=21):
         treadmill_steps.append({
             'step': i + 1,
             'incline': max(round(incline_percentage / 0.5) * 0.5, args.min_incline),
-            'distance': to_miles(distance),
-            'cumulative_distance': to_miles(total_distance)
+            'distance': to_miles(distance) if args.unit == "mi" else distance / 1000,
+            'cumulative_distance': to_miles(total_distance) if args.unit == "mi" else total_distance / 1000
         })
         total_distance += distance
     
@@ -135,13 +137,19 @@ treadmill_steps = generate_treadmill_steps(distances, slopes)
 def print_steps(steps):
     final_dis = 0
     for i, step in enumerate(steps):
-        print (F"""Step {i + 1} ({"Hill" if step['incline'] > 1 else "Downhill" if step['incline'] < -1 else "Flat"})
-\tIncline : {max(round(step['incline'] / 0.5) * 0.5, args.min_incline)}%
-\tStep Distance: {round (step['distance'] * 100) / 100}mi
-\tStart this step at (mi): {round(step['cumulative_distance'] * 100) / 100}mi\
+        up_down = "Hill" if step['incline'] > 1 else "Downhill" if step['incline'] < -1 else "Flat"
+        incline_level = max(round(step['incline'] / 0.5) * 0.5, args.min_incline)
+        start = round(step['cumulative_distance'] * 100) / 100
+        if args.step_print:
+            print(F"""{i + 1} / {len(steps)} ({up_down}): At {start}{args.unit}, set to incline {incline_level}%""")
+        else:
+            print (F"""Step {i + 1} ({up_down})
+\tIncline : {incline_level}%
+\tStep Distance: {round (step['distance'] * 100) / 100}{args.unit}
+\tStart this step at: {start}{args.unit}\
 """)
         final_dis = step['cumulative_distance'] + step['distance']
-    print(F"Final Distance: {round(final_dis * 10) / 10}mi")
+    print(F"Final Distance: {round(final_dis * 10) / 10}{args.unit}")
 
 def combine_steps(steps, combine_within = 2):
     incline_amt = float("Inf")
